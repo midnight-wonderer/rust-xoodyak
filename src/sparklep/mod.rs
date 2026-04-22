@@ -1,7 +1,10 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
+#[cfg(not(all(target_arch = "arm", target_feature = "thumb2")))]
 mod impl_portable;
+#[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
+mod impl_thumb2;
 
 const RCON: [u32; 8] = [
     0xB7E15162, 0xBF715880, 0x38B4DA56, 0x324E7738, 0xBB1185EB, 0x4F7C7B57, 0xCFBFA1C8, 0xC2B3293D,
@@ -54,7 +57,7 @@ impl SparkleP {
         for st_word in &mut st_words {
             *st_word = (*st_word).to_le()
         }
-        self.from_words(&st_words);
+        self.init_from_words(st_words);
     }
 
     #[cfg(target_endian = "little")]

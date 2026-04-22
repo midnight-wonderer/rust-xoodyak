@@ -10,6 +10,7 @@ fn ell(x: u32) -> u32 {
     rot(x ^ (x << 16), 16)
 }
 
+#[cfg(not(all(target_arch = "arm", target_feature = "thumb2")))]
 impl SparkleP {
     pub fn permute(&mut self, steps: usize) {
         let mut state = self.to_words();
