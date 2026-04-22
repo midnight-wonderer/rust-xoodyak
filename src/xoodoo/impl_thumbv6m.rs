@@ -1,6 +1,5 @@
 use super::{Xoodoo, ROUND_KEYS};
 use core::arch::asm;
-use core::convert::TryInto;
 
 #[cfg(all(target_arch = "arm", not(target_feature = "thumb2")))]
 impl Xoodoo {
@@ -18,10 +17,18 @@ impl Xoodoo {
     }
 
     pub fn permute(&mut self) {
-        let mut st = [0u32; 12];
-        for i in 0..12 {
-            st[i] = u32::from_le_bytes(self.st[i * 4..i * 4 + 4].try_into().unwrap());
-        }
+        // Since Xoodoo is #[repr(align(4))], self.st is guaranteed to be 4-byte aligned.
+        // On Little Endian, we can safely treat it as a [u32; 12] array in-place.
+        let mut st_buf = [0u32; 12];
+        let st = if cfg!(target_endian = "little") {
+            unsafe { &mut *(self.st.as_mut_ptr() as *mut [u32; 12]) }
+        } else {
+            use core::convert::TryInto;
+            for i in 0..12 {
+                st_buf[i] = u32::from_le_bytes(self.st[i * 4..i * 4 + 4].try_into().unwrap());
+            }
+            &mut st_buf
+        };
 
         for &round_key in &ROUND_KEYS {
             let p = [
@@ -71,8 +78,12 @@ impl Xoodoo {
             st[11] = Self::ror((!tmp[1] & tmp[5]) ^ tmp[9], 24);
         }
 
-        for i in 0..12 {
-            self.st[i * 4..i * 4 + 4].copy_from_slice(&st[i].to_le_bytes());
+        // Sync back only for Big Endian targets
+        // (Little Endian targets operated in-place)
+        if !cfg!(target_endian = "little") {
+            for i in 0..12 {
+                self.st[i * 4..i * 4 + 4].copy_from_slice(&st[i].to_le_bytes());
+            }
         }
     }
 }
