@@ -8,17 +8,17 @@ const RCON: [u32; 8] = [
 ];
 
 #[derive(Clone, Debug)]
-pub struct Xoodoo {
+pub struct SparkleP {
     st: [u8; 48],
 }
 
-impl Default for Xoodoo {
+impl Default for SparkleP {
     fn default() -> Self {
         Self { st: [0u8; 48] }
     }
 }
 
-impl Xoodoo {
+impl SparkleP {
     #[inline(always)]
     fn bytes_view(&self) -> &[u8] {
         &self.st
@@ -65,7 +65,7 @@ impl Xoodoo {
 
     #[inline]
     pub fn from_bytes(bytes: [u8; 48]) -> Self {
-        let mut st = Xoodoo::default();
+        let mut st = SparkleP::default();
         let st_bytes = st.bytes_view_mut();
         st_bytes.copy_from_slice(&bytes);
         st
@@ -104,7 +104,7 @@ impl Xoodoo {
     }
 }
 
-impl Drop for Xoodoo {
+impl Drop for SparkleP {
     fn drop(&mut self) {
         self.st.zeroize()
     }

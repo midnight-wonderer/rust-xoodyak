@@ -2,7 +2,7 @@ use crate::*;
 
 #[test]
 fn test_keyed_empty() {
-    let mut st = XoodyakKeyed::new(b"key", None, None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"key", None, None, None).unwrap();
     let mut out = [0u8; 32];
     st.squeeze(&mut out);
     assert_eq!(
@@ -16,7 +16,7 @@ fn test_keyed_empty() {
 
 #[test]
 fn test_unkeyed_empty() {
-    let mut st = XoodyakHash::new();
+    let mut st = XoosparkHash::new();
     let mut out = [0u8; 32];
     st.squeeze(&mut out);
     assert_eq!(
@@ -27,7 +27,7 @@ fn test_unkeyed_empty() {
         ]
     );
 
-    let mut st = XoodyakHash::new();
+    let mut st = XoosparkHash::new();
     let mut out = [0u8; 32];
     st.absorb(&[]);
     st.squeeze(&mut out);
@@ -42,7 +42,7 @@ fn test_unkeyed_empty() {
 
 #[test]
 fn test_encrypt() {
-    let mut st = XoodyakKeyed::new(b"key", None, None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"key", None, None, None).unwrap();
     let st0 = st.clone();
     let m = b"message";
     let mut c = [0u8; 7];
@@ -81,7 +81,7 @@ fn test_encrypt() {
 
 #[test]
 fn test_unkeyed_hash() {
-    let mut st = XoodyakHash::new();
+    let mut st = XoosparkHash::new();
     let m = b"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
     st.absorb(&m[..]);
     let mut hash = [0u8; 32];
@@ -108,12 +108,12 @@ fn test_unkeyed_hash() {
 #[test]
 fn test_aead() {
     let nonce = [0u8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    let mut st = XoodyakKeyed::new(b"key", Some(&nonce), None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"key", Some(&nonce), None, None).unwrap();
     let st0 = st.clone();
     let m = b"message";
     let ad = b"ad";
     st.absorb(ad);
-    let mut c = [0u8; 7 + XOODYAK_AUTH_TAG_BYTES];
+    let mut c = [0u8; 7 + XOOSPARK_AUTH_TAG_BYTES];
     st.aead_encrypt(&mut c, Some(m)).unwrap();
 
     let mut st = st0.clone();
@@ -127,7 +127,7 @@ fn test_aead() {
     let result = st.aead_decrypt(&mut m2, &m[..]);
     assert!(result.is_err());
 
-    let mut st = XoodyakKeyed::new(b"Another key", Some(&nonce), None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"Another key", Some(&nonce), None, None).unwrap();
     let mut m2 = [0u8; 7];
     let result = st.aead_decrypt(&mut m2, &m[..]);
     assert!(result.is_err());
@@ -136,12 +136,12 @@ fn test_aead() {
 #[test]
 fn test_aead_in_place() {
     let nonce = [0u8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    let mut st = XoodyakKeyed::new(b"key", Some(&nonce), None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"key", Some(&nonce), None, None).unwrap();
     let st0 = st.clone();
 
     let m = b"message";
     st.absorb(b"ad");
-    let mut buf = [0u8; 7 + XOODYAK_AUTH_TAG_BYTES];
+    let mut buf = [0u8; 7 + XOOSPARK_AUTH_TAG_BYTES];
     buf[..7].copy_from_slice(m);
     st.aead_encrypt_in_place(&mut buf).unwrap();
 
@@ -159,7 +159,7 @@ fn test_aead_in_place() {
 #[test]
 fn test_aead_detached() {
     let nonce = [0u8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    let mut st = XoodyakKeyed::new(b"key", Some(&nonce), None, None).unwrap();
+    let mut st = XoosparkKeyed::new(b"key", Some(&nonce), None, None).unwrap();
     let st0 = st.clone();
     let m = b"message";
     st.absorb(b"ad");

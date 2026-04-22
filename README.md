@@ -1,8 +1,8 @@
 ![GitHub CI](https://github.com/jedisct1/rust-xoodyak/workflows/Rust/badge.svg)
 
-# Xoodyak for Rust
+# Xoospark for Rust
 
-This is a Rust implementation of [Xoodyak](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/xoodyak-spec-final.pdf), a cryptographic primitive that can be used for hashing, encryption, MAC computation and authenticated encryption.
+This is a Rust implementation of Xoospark, a cryptographic primitive that can be used for hashing, encryption, MAC computation and authenticated encryption. Xoospark is based on the Sparkle permutation (SparkleP) within the Cyclist mode of operation.
 
 * `no_std`-friendly
 * Lightweight

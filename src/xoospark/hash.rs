@@ -2,30 +2,30 @@ use super::internal::{Mode, Phase};
 use super::*;
 
 #[derive(Clone, Debug)]
-pub struct XoodyakHash {
-    state: Xoodoo,
+pub struct XoosparkHash {
+    state: SparkleP,
     phase: Phase,
 }
 
-impl XoodyakHash {
+impl XoosparkHash {
     pub fn new() -> Self {
-        XoodyakHash {
-            state: Xoodoo::default(),
+        XoosparkHash {
+            state: SparkleP::default(),
             phase: Phase::Up,
         }
     }
 }
 
-impl Default for XoodyakHash {
+impl Default for XoosparkHash {
     #[inline]
     fn default() -> Self {
-        XoodyakHash::new()
+        XoosparkHash::new()
     }
 }
 
-impl internal::XoodyakCommon for XoodyakHash {
+impl internal::XoosparkCommon for XoosparkHash {
     #[inline(always)]
-    fn state(&mut self) -> &mut Xoodoo {
+    fn state(&mut self) -> &mut SparkleP {
         &mut self.state
     }
 
@@ -55,4 +55,4 @@ impl internal::XoodyakCommon for XoodyakHash {
     }
 }
 
-impl XoodyakCommon for XoodyakHash {}
+impl XoosparkCommon for XoosparkHash {}

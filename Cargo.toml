@@ -1,11 +1,11 @@
 [package]
-name = "xoodyak"
+name = "xoospark"
 version = "0.8.4"
 authors = ["Frank Denis <github@pureftpd.org>"]
 edition = "2018"
-description = "Xoodyak / Xoodoo - A versatile cryptographic scheme that can be used for hashing, encryption, MAC computation and authenticated encryption."
+description = "Xoospark / SparkleP - A versatile cryptographic scheme that can be used for hashing, encryption, MAC computation and authenticated encryption."
 readme = "README.md"
-keywords = ["crypto", "xoodyak", "xoodoo", "cyclist"]
+keywords = ["crypto", "xoospark", "sparklep", "cyclist"]
 license = "MIT"
 homepage = "https://github.com/jedisct1/rust-xoodyak"
 repository = "https://github.com/jedisct1/rust-xoodyak"

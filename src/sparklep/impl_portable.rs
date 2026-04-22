@@ -1,4 +1,4 @@
-use super::{Xoodoo, RCON};
+use super::{SparkleP, RCON};
 
 #[inline(always)]
 fn rot(x: u32, n: u32) -> u32 {
@@ -10,7 +10,7 @@ fn ell(x: u32) -> u32 {
     rot(x ^ (x << 16), 16)
 }
 
-impl Xoodoo {
+impl SparkleP {
     pub fn permute(&mut self, steps: usize) {
         let mut state = self.to_words();
         let brans = 6;

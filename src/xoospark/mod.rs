@@ -10,7 +10,7 @@ pub use keyed::*;
 pub use tag::*;
 
 use crate::error::*;
-use crate::xoodoo::*;
+use crate::sparklep::*;
 
 pub(crate) const HASH_ABSORB_RATE: usize = 16;
 pub(crate) const HASH_SQUEEZE_RATE: usize = 16;
@@ -35,8 +35,8 @@ mod internal {
         Down,
     }
 
-    pub trait XoodyakCommon {
-        fn state(&mut self) -> &mut Xoodoo;
+    pub trait XoosparkCommon {
+        fn state(&mut self) -> &mut SparkleP;
         fn mode(&self) -> Mode;
         fn phase(&self) -> Phase;
         fn set_phase(&mut self, phase: Phase);
@@ -118,7 +118,7 @@ mod internal {
     }
 }
 
-pub trait XoodyakCommon: internal::XoodyakCommon {
+pub trait XoosparkCommon: internal::XoosparkCommon {
     #[inline(always)]
     fn absorb(&mut self, bin: &[u8]) {
         self.absorb_any(bin, self.absorb_rate(), 0x03);
