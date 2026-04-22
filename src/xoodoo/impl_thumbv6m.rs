@@ -1,21 +1,7 @@
 use super::{Xoodoo, ROUND_KEYS};
-use core::arch::asm;
 
 #[cfg(all(target_arch = "arm", not(target_feature = "thumb2")))]
 impl Xoodoo {
-    #[inline(always)]
-    fn ror(val: u32, shift: u32) -> u32 {
-        let out: u32;
-        unsafe {
-            asm!(
-                "rors {0}, {1}",
-                inout(reg) val => out,
-                in(reg) shift,
-            );
-        }
-        out
-    }
-
     pub fn permute(&mut self) {
         // Since Xoodoo is #[repr(align(4))], self.st is guaranteed to be 4-byte aligned.
         // On Little Endian, we can safely treat it as a [u32; 12] array in-place.
@@ -39,10 +25,10 @@ impl Xoodoo {
             ];
 
             let e = [
-                Self::ror(p[3], 27) ^ Self::ror(p[3], 18),
-                Self::ror(p[0], 27) ^ Self::ror(p[0], 18),
-                Self::ror(p[1], 27) ^ Self::ror(p[1], 18),
-                Self::ror(p[2], 27) ^ Self::ror(p[2], 18),
+                p[3].rotate_right(27) ^ p[3].rotate_right(18),
+                p[0].rotate_right(27) ^ p[0].rotate_right(18),
+                p[1].rotate_right(27) ^ p[1].rotate_right(18),
+                p[2].rotate_right(27) ^ p[2].rotate_right(18),
             ];
 
             let mut tmp = [0u32; 12];
@@ -57,25 +43,25 @@ impl Xoodoo {
             tmp[6] = e[1] ^ st[5];
             tmp[7] = e[2] ^ st[6];
 
-            tmp[8] = Self::ror(e[0] ^ st[8], 21);
-            tmp[9] = Self::ror(e[1] ^ st[9], 21);
-            tmp[10] = Self::ror(e[2] ^ st[10], 21);
-            tmp[11] = Self::ror(e[3] ^ st[11], 21);
+            tmp[8] = (e[0] ^ st[8]).rotate_right(21);
+            tmp[9] = (e[1] ^ st[9]).rotate_right(21);
+            tmp[10] = (e[2] ^ st[10]).rotate_right(21);
+            tmp[11] = (e[3] ^ st[11]).rotate_right(21);
 
             st[0] = (!tmp[4] & tmp[8]) ^ tmp[0];
             st[1] = (!tmp[5] & tmp[9]) ^ tmp[1];
             st[2] = (!tmp[6] & tmp[10]) ^ tmp[2];
             st[3] = (!tmp[7] & tmp[11]) ^ tmp[3];
 
-            st[4] = Self::ror((!tmp[8] & tmp[0]) ^ tmp[4], 31);
-            st[5] = Self::ror((!tmp[9] & tmp[1]) ^ tmp[5], 31);
-            st[6] = Self::ror((!tmp[10] & tmp[2]) ^ tmp[6], 31);
-            st[7] = Self::ror((!tmp[11] & tmp[3]) ^ tmp[7], 31);
+            st[4] = ((!tmp[8] & tmp[0]) ^ tmp[4]).rotate_right(31);
+            st[5] = ((!tmp[9] & tmp[1]) ^ tmp[5]).rotate_right(31);
+            st[6] = ((!tmp[10] & tmp[2]) ^ tmp[6]).rotate_right(31);
+            st[7] = ((!tmp[11] & tmp[3]) ^ tmp[7]).rotate_right(31);
 
-            st[8] = Self::ror((!tmp[2] & tmp[6]) ^ tmp[10], 24);
-            st[9] = Self::ror((!tmp[3] & tmp[7]) ^ tmp[11], 24);
-            st[10] = Self::ror((!tmp[0] & tmp[4]) ^ tmp[8], 24);
-            st[11] = Self::ror((!tmp[1] & tmp[5]) ^ tmp[9], 24);
+            st[8] = ((!tmp[2] & tmp[6]) ^ tmp[10]).rotate_right(24);
+            st[9] = ((!tmp[3] & tmp[7]) ^ tmp[11]).rotate_right(24);
+            st[10] = ((!tmp[0] & tmp[4]) ^ tmp[8]).rotate_right(24);
+            st[11] = ((!tmp[1] & tmp[5]) ^ tmp[9]).rotate_right(24);
         }
 
         // Sync back only for Big Endian targets
