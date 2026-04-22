@@ -12,15 +12,14 @@ impl Xoodoo {
         let c_ptr = unsafe { st_ptr.add(8) };
 
         unsafe {
-            let mut a0 = st_ptr.add(0).read_unaligned();
-            let mut a1 = st_ptr.add(1).read_unaligned();
-            let mut a2 = st_ptr.add(2).read_unaligned();
-            let mut a3 = st_ptr.add(3).read_unaligned();
-
-            let mut b0 = st_ptr.add(4).read_unaligned();
-            let mut b1 = st_ptr.add(5).read_unaligned();
-            let mut b2 = st_ptr.add(6).read_unaligned();
-            let mut b3 = st_ptr.add(7).read_unaligned();
+            let mut a0 = *st_ptr.add(0);
+            let mut a1 = *st_ptr.add(1);
+            let mut a2 = *st_ptr.add(2);
+            let mut a3 = *st_ptr.add(3);
+            let mut b0 = *st_ptr.add(4);
+            let mut b1 = *st_ptr.add(5);
+            let mut b2 = *st_ptr.add(6);
+            let mut b3 = *st_ptr.add(7);
 
             asm!(
                 "2:", // .Lround_loop
@@ -157,14 +156,14 @@ impl Xoodoo {
                 t2 = out(reg) _,
             );
 
-            st_ptr.add(0).write_unaligned(a0);
-            st_ptr.add(1).write_unaligned(a1);
-            st_ptr.add(2).write_unaligned(a2);
-            st_ptr.add(3).write_unaligned(a3);
-            st_ptr.add(4).write_unaligned(b0);
-            st_ptr.add(5).write_unaligned(b1);
-            st_ptr.add(6).write_unaligned(b2);
-            st_ptr.add(7).write_unaligned(b3);
+            *st_ptr.add(0) = a0;
+            *st_ptr.add(1) = a1;
+            *st_ptr.add(2) = a2;
+            *st_ptr.add(3) = a3;
+            *st_ptr.add(4) = b0;
+            *st_ptr.add(5) = b1;
+            *st_ptr.add(6) = b2;
+            *st_ptr.add(7) = b3;
         }
     }
 }
