@@ -108,11 +108,13 @@ impl XoodyakKeyed {
             return Err(Error::InvalidBufferLength);
         }
         let mut cu = 0x80;
+        let mut steps = STEPS_BIG;
         for (out_chunk, chunk) in out
             .chunks_mut(KEYED_SQUEEZE_RATE)
             .zip(bin.chunks(KEYED_SQUEEZE_RATE))
         {
-            self.up(Some(out_chunk), cu);
+            self.up(Some(out_chunk), cu, steps);
+            steps = STEPS_SLIM;
             cu = 0x00;
             self.down(Some(chunk), 0x00);
             for (out_chunk_byte, chunk_byte) in out_chunk.iter_mut().zip(chunk) {
@@ -128,11 +130,13 @@ impl XoodyakKeyed {
             return Err(Error::InvalidBufferLength);
         }
         let mut cu = 0x80;
+        let mut steps = STEPS_BIG;
         for (out_chunk, chunk) in out
             .chunks_mut(KEYED_SQUEEZE_RATE)
             .zip(bin.chunks(KEYED_SQUEEZE_RATE))
         {
-            self.up(Some(out_chunk), cu);
+            self.up(Some(out_chunk), cu, steps);
+            steps = STEPS_SLIM;
             cu = 0x00;
             for (out_chunk_byte, chunk_byte) in out_chunk.iter_mut().zip(chunk) {
                 *out_chunk_byte ^= *chunk_byte;
@@ -146,8 +150,10 @@ impl XoodyakKeyed {
         debug_assert_eq!(self.mode(), Mode::Keyed);
         let mut tmp = [0u8; KEYED_SQUEEZE_RATE];
         let mut cu = 0x80;
+        let mut steps = STEPS_BIG;
         for in_out_chunk in in_out.chunks_mut(KEYED_SQUEEZE_RATE) {
-            self.up(Some(&mut tmp), cu);
+            self.up(Some(&mut tmp), cu, steps);
+            steps = STEPS_SLIM;
             cu = 0x00;
             self.down(Some(in_out_chunk), 0x00);
             for (in_out_chunk_byte, tmp_byte) in in_out_chunk.iter_mut().zip(&tmp) {
@@ -160,8 +166,10 @@ impl XoodyakKeyed {
         debug_assert_eq!(self.mode(), Mode::Keyed);
         let mut tmp = [0u8; KEYED_SQUEEZE_RATE];
         let mut cu = 0x80;
+        let mut steps = STEPS_BIG;
         for in_out_chunk in in_out.chunks_mut(KEYED_SQUEEZE_RATE) {
-            self.up(Some(&mut tmp), cu);
+            self.up(Some(&mut tmp), cu, steps);
+            steps = STEPS_SLIM;
             cu = 0x00;
             for (in_out_chunk_byte, tmp_byte) in in_out_chunk.iter_mut().zip(&tmp) {
                 *in_out_chunk_byte ^= *tmp_byte;

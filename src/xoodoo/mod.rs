@@ -1,13 +1,10 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
-#[cfg(not(target_arch = "x86_64"))]
 mod impl_portable;
-#[cfg(target_arch = "x86_64")]
-mod impl_x86_64;
 
-const ROUND_KEYS: [u32; 12] = [
-    0x058, 0x038, 0x3c0, 0x0d0, 0x120, 0x014, 0x060, 0x02c, 0x380, 0x0f0, 0x1a0, 0x012,
+const RCON: [u32; 8] = [
+    0xB7E15162, 0xBF715880, 0x38B4DA56, 0x324E7738, 0xBB1185EB, 0x4F7C7B57, 0xCFBFA1C8, 0xC2B3293D,
 ];
 
 #[derive(Clone, Debug)]
