@@ -16,7 +16,7 @@ fn main() {
         let mut out = [0u8; 48];
         let mut st = Xoodoo::default();
         let res = bench.run(options, || {
-            st.permute();
+            st.permute(11); // STEPS_BIG
             st.bytes(&mut out);
             out
         });
