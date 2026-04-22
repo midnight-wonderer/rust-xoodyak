@@ -22,6 +22,7 @@ impl Xoodoo {
             let mut b3 = *st_ptr.add(7);
 
             asm!(
+                ".p2align 2",
                 "2:", // .Lround_loop
 
                 // === THETA ===
