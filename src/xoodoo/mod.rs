@@ -1,16 +1,10 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
-#[cfg(not(any(
-    target_arch = "x86_64",
-    all(target_arch = "arm", target_feature = "thumb2"),
-    all(target_arch = "arm", not(target_feature = "thumb2"))
-)))]
+#[cfg(not(any(target_arch = "x86_64", all(target_arch = "arm", target_feature = "thumb2"))))]
 mod impl_portable;
 #[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
 mod impl_thumb2;
-#[cfg(all(target_arch = "arm", not(target_feature = "thumb2")))]
-mod impl_thumbv6m;
 #[cfg(target_arch = "x86_64")]
 mod impl_x86_64;
 
@@ -66,7 +60,7 @@ impl Xoodoo {
         for st_word in &mut st_words {
             *st_word = (*st_word).to_le()
         }
-        self.from_words(&st_words);
+        self.init_from_words(st_words);
     }
 
     #[cfg(target_endian = "little")]
