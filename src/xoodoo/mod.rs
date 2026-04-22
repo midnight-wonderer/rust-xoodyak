@@ -1,7 +1,10 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
-#[cfg(not(any(target_arch = "x86_64", all(target_arch = "arm", target_feature = "thumb2"))))]
+#[cfg(not(any(
+    target_arch = "x86_64",
+    all(target_arch = "arm", target_feature = "thumb2"),
+)))]
 mod impl_portable;
 #[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
 mod impl_thumb2;
