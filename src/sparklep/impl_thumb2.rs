@@ -1,6 +1,6 @@
 use super::{SparkleP, RCON};
 
-#[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
+#[cfg(all(target_arch = "arm", target_has_atomic = "32"))]
 impl SparkleP {
     #[allow(clippy::many_single_char_names)]
     pub fn permute(&mut self, steps: usize) {

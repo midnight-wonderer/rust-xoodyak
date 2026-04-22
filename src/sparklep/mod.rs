@@ -1,9 +1,9 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
-#[cfg(not(all(target_arch = "arm", target_feature = "thumb2")))]
+#[cfg(not(all(target_arch = "arm", target_has_atomic = "32")))]
 mod impl_portable;
-#[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
+#[cfg(all(target_arch = "arm", target_has_atomic = "32"))]
 mod impl_thumb2;
 
 const RCON: [u32; 8] = [
