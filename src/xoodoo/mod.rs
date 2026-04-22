@@ -3,11 +3,14 @@ use zeroize::Zeroize;
 
 #[cfg(not(any(
     target_arch = "x86_64",
-    all(target_arch = "arm", target_feature = "thumb2")
+    all(target_arch = "arm", target_feature = "thumb2"),
+    all(target_arch = "arm", not(target_feature = "thumb2"))
 )))]
 mod impl_portable;
 #[cfg(all(target_arch = "arm", target_feature = "thumb2"))]
 mod impl_thumb2;
+#[cfg(all(target_arch = "arm", not(target_feature = "thumb2")))]
+mod impl_thumbv6m;
 #[cfg(target_arch = "x86_64")]
 mod impl_x86_64;
 
@@ -16,6 +19,7 @@ const ROUND_KEYS: [u32; 12] = [
 ];
 
 #[derive(Clone, Debug)]
+#[repr(align(4))]
 pub struct Xoodoo {
     st: [u8; 48],
 }
