@@ -2,61 +2,61 @@ use super::internal::{Mode, Phase};
 use super::*;
 
 #[derive(Clone, Debug)]
-pub enum XoodyakAny {
-    Hash(XoodyakHash),
-    Keyed(XoodyakKeyed),
+pub enum XoosparkAny {
+    Hash(XoosparkHash),
+    Keyed(XoosparkKeyed),
 }
 
-impl internal::XoodyakCommon for XoodyakAny {
-    fn state(&mut self) -> &mut Xoodoo {
+impl internal::XoosparkCommon for XoosparkAny {
+    fn state(&mut self) -> &mut SparkleP {
         match self {
-            XoodyakAny::Hash(x) => x.state(),
-            XoodyakAny::Keyed(x) => x.state(),
+            XoosparkAny::Hash(x) => x.state(),
+            XoosparkAny::Keyed(x) => x.state(),
         }
     }
 
     fn mode(&self) -> Mode {
         match self {
-            XoodyakAny::Hash(x) => x.mode(),
-            XoodyakAny::Keyed(x) => x.mode(),
+            XoosparkAny::Hash(x) => x.mode(),
+            XoosparkAny::Keyed(x) => x.mode(),
         }
     }
 
     fn phase(&self) -> Phase {
         match self {
-            XoodyakAny::Hash(x) => x.phase(),
-            XoodyakAny::Keyed(x) => x.phase(),
+            XoosparkAny::Hash(x) => x.phase(),
+            XoosparkAny::Keyed(x) => x.phase(),
         }
     }
 
     fn set_phase(&mut self, phase: Phase) {
         match self {
-            XoodyakAny::Hash(x) => x.set_phase(phase),
-            XoodyakAny::Keyed(x) => x.set_phase(phase),
+            XoosparkAny::Hash(x) => x.set_phase(phase),
+            XoosparkAny::Keyed(x) => x.set_phase(phase),
         }
     }
 
     fn absorb_rate(&self) -> usize {
         match self {
-            XoodyakAny::Hash(x) => x.absorb_rate(),
-            XoodyakAny::Keyed(x) => x.absorb_rate(),
+            XoosparkAny::Hash(x) => x.absorb_rate(),
+            XoosparkAny::Keyed(x) => x.absorb_rate(),
         }
     }
 
     fn squeeze_rate(&self) -> usize {
         match self {
-            XoodyakAny::Hash(x) => x.squeeze_rate(),
-            XoodyakAny::Keyed(x) => x.squeeze_rate(),
+            XoosparkAny::Hash(x) => x.squeeze_rate(),
+            XoosparkAny::Keyed(x) => x.squeeze_rate(),
         }
     }
 }
 
-impl XoodyakAny {
+impl XoosparkAny {
     #[inline]
-    fn keyed(&mut self) -> Result<&mut XoodyakKeyed, Error> {
+    fn keyed(&mut self) -> Result<&mut XoosparkKeyed, Error> {
         match self {
-            XoodyakAny::Hash(_) => Err(Error::KeyRequired),
-            XoodyakAny::Keyed(ref mut x) => Ok(x),
+            XoosparkAny::Hash(_) => Err(Error::KeyRequired),
+            XoosparkAny::Keyed(ref mut x) => Ok(x),
         }
     }
 
@@ -212,4 +212,4 @@ impl XoodyakAny {
     }
 }
 
-impl XoodyakCommon for XoodyakAny {}
+impl XoosparkCommon for XoosparkAny {}

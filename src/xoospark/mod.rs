@@ -10,13 +10,15 @@ pub use keyed::*;
 pub use tag::*;
 
 use crate::error::*;
-use crate::xoodoo::*;
+use crate::sparklep::*;
 
 pub(crate) const HASH_ABSORB_RATE: usize = 16;
 pub(crate) const HASH_SQUEEZE_RATE: usize = 16;
 pub(crate) const KEYED_ABSORB_RATE: usize = 44;
 pub(crate) const KEYED_SQUEEZE_RATE: usize = 24;
 pub(crate) const RATCHET_RATE: usize = 16;
+pub(crate) const STEPS_SLIM: usize = 7;
+pub(crate) const STEPS_BIG: usize = 11;
 
 mod internal {
     use super::*;
@@ -33,8 +35,8 @@ mod internal {
         Down,
     }
 
-    pub trait XoodyakCommon {
-        fn state(&mut self) -> &mut Xoodoo;
+    pub trait XoosparkCommon {
+        fn state(&mut self) -> &mut SparkleP;
         fn mode(&self) -> Mode;
         fn phase(&self) -> Phase;
         fn set_phase(&mut self, phase: Phase);
@@ -42,8 +44,8 @@ mod internal {
         fn squeeze_rate(&self) -> usize;
 
         #[inline(always)]
-        fn permute(&mut self) {
-            self.state().permute()
+        fn permute(&mut self, steps: usize) {
+            self.state().permute(steps)
         }
 
         #[inline(always)]
@@ -62,13 +64,13 @@ mod internal {
         }
 
         #[inline(always)]
-        fn up(&mut self, out: Option<&mut [u8]>, cu: u8) {
+        fn up(&mut self, out: Option<&mut [u8]>, cu: u8, steps: usize) {
             debug_assert!(out.as_ref().map(|x| x.len()).unwrap_or(0) <= self.squeeze_rate());
             self.set_phase(Phase::Up);
             if self.mode() != Mode::Hash {
                 self.add_byte(cu, 47);
             }
-            self.permute();
+            self.permute(steps);
             if let Some(out) = out {
                 self.extract_bytes(out);
             }
@@ -95,11 +97,11 @@ mod internal {
         fn absorb_any(&mut self, bin: &[u8], rate: usize, cd: u8) {
             let mut chunks_it = bin.chunks(rate);
             if self.phase() != Phase::Up {
-                self.up(None, 0x00)
+                self.up(None, 0x00, STEPS_BIG)
             }
             self.down(chunks_it.next(), cd);
             for chunk in chunks_it {
-                self.up(None, 0x00);
+                self.up(None, 0x00, STEPS_SLIM);
                 self.down(Some(chunk), 0x00);
             }
         }
@@ -107,16 +109,16 @@ mod internal {
         #[inline]
         fn squeeze_any(&mut self, out: &mut [u8], cu: u8) {
             let mut chunks_it = out.chunks_mut(self.squeeze_rate());
-            self.up(chunks_it.next(), cu);
+            self.up(chunks_it.next(), cu, STEPS_BIG);
             for chunk in chunks_it {
                 self.down(None, 0x00);
-                self.up(Some(chunk), 0x00);
+                self.up(Some(chunk), 0x00, STEPS_SLIM);
             }
         }
     }
 }
 
-pub trait XoodyakCommon: internal::XoodyakCommon {
+pub trait XoosparkCommon: internal::XoosparkCommon {
     #[inline(always)]
     fn absorb(&mut self, bin: &[u8]) {
         self.absorb_any(bin, self.absorb_rate(), 0x03);
@@ -125,7 +127,7 @@ pub trait XoodyakCommon: internal::XoodyakCommon {
     #[inline]
     fn absorb_more(&mut self, bin: &[u8], rate: usize) {
         for chunk in bin.chunks(rate) {
-            self.up(None, 0x00);
+            self.up(None, 0x00, STEPS_SLIM);
             self.down(Some(chunk), 0x00);
         }
     }
@@ -144,7 +146,7 @@ pub trait XoodyakCommon: internal::XoodyakCommon {
     fn squeeze_more(&mut self, out: &mut [u8]) {
         for chunk in out.chunks_mut(self.squeeze_rate()) {
             self.down(None, 0x00);
-            self.up(Some(chunk), 0x00);
+            self.up(Some(chunk), 0x00, STEPS_SLIM);
         }
     }
 

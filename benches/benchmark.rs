@@ -1,5 +1,5 @@
 use benchmark_simple::*;
-use xoodyak::*;
+use xoospark::*;
 
 fn main() {
     let bench = Bench::new();
@@ -14,34 +14,34 @@ fn main() {
 
     {
         let mut out = [0u8; 48];
-        let mut st = Xoodoo::default();
+        let mut st = SparkleP::default();
         let res = bench.run(options, || {
-            st.permute();
+            st.permute(11); // STEPS_BIG
             st.bytes(&mut out);
             out
         });
-        println!("Xoodoo  permutation: {}", res.throughput(out.len() as _));
+        println!("SparkleP  permutation: {}", res.throughput(out.len() as _));
     }
 
     {
         let mut out = [0u8; 64];
-        let mut st = XoodyakHash::new();
+        let mut st = XoosparkHash::new();
         let res = bench.run(options,  || {
             st.absorb(b"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
             st.squeeze(&mut out);
             out
         });
-        println!("Xoodyak hash       : {}", res.throughput(out.len() as _));
+        println!("Xoospark hash       : {}", res.throughput(out.len() as _));
     }
 
     {
         let mut out = [0u8; 64];
-        let mut st = XoodyakKeyed::new(b"key", None, None, None).unwrap();
+        let mut st = XoosparkKeyed::new(b"key", None, None, None).unwrap();
         let res = bench.run(options,  || {
             st.absorb(b"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
             st.squeeze(&mut out);
             out
         });
-        println!("Xoodyak keyed      : {}", res.throughput(out.len() as _));
+        println!("Xoospark keyed      : {}", res.throughput(out.len() as _));
     }
 }

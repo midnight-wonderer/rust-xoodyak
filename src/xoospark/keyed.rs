@@ -50,13 +50,13 @@ impl XoosparkKeyed {
         key_id: Option<&[u8]>,
         counter: Option<&[u8]>,
     ) -> Result<Self, Error> {
-        let mut xoospark = XoosparkKeyed {
+        let mut xoodspark = XoosparkKeyed {
             state: SparkleP::default(),
             phase: Phase::Up,
             mode: Mode::Keyed,
         };
-        xoospark.absorb_key_and_nonce(key, key_id, nonce, counter)?;
-        Ok(xoospark)
+        xoodspark.absorb_key_and_nonce(key, key_id, nonce, counter)?;
+        Ok(xoodspark)
     }
 
     pub fn absorb_key_and_nonce(

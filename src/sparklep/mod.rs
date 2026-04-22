@@ -1,27 +1,27 @@
 use core::convert::TryInto;
 use zeroize::Zeroize;
 
-#[cfg(not(target_arch = "x86_64"))]
+#[cfg(not(all(target_arch = "arm", target_has_atomic = "32")))]
 mod impl_portable;
-#[cfg(target_arch = "x86_64")]
-mod impl_x86_64;
+#[cfg(all(target_arch = "arm", target_has_atomic = "32"))]
+mod impl_thumb2;
 
-const ROUND_KEYS: [u32; 12] = [
-    0x058, 0x038, 0x3c0, 0x0d0, 0x120, 0x014, 0x060, 0x02c, 0x380, 0x0f0, 0x1a0, 0x012,
+const RCON: [u32; 8] = [
+    0xB7E15162, 0xBF715880, 0x38B4DA56, 0x324E7738, 0xBB1185EB, 0x4F7C7B57, 0xCFBFA1C8, 0xC2B3293D,
 ];
 
 #[derive(Clone, Debug)]
-pub struct Xoodoo {
+pub struct SparkleP {
     st: [u8; 48],
 }
 
-impl Default for Xoodoo {
+impl Default for SparkleP {
     fn default() -> Self {
         Self { st: [0u8; 48] }
     }
 }
 
-impl Xoodoo {
+impl SparkleP {
     #[inline(always)]
     fn bytes_view(&self) -> &[u8] {
         &self.st
@@ -57,7 +57,7 @@ impl Xoodoo {
         for st_word in &mut st_words {
             *st_word = (*st_word).to_le()
         }
-        self.from_words(&st_words);
+        self.init_from_words(st_words);
     }
 
     #[cfg(target_endian = "little")]
@@ -68,7 +68,7 @@ impl Xoodoo {
 
     #[inline]
     pub fn from_bytes(bytes: [u8; 48]) -> Self {
-        let mut st = Xoodoo::default();
+        let mut st = SparkleP::default();
         let st_bytes = st.bytes_view_mut();
         st_bytes.copy_from_slice(&bytes);
         st
@@ -107,7 +107,7 @@ impl Xoodoo {
     }
 }
 
-impl Drop for Xoodoo {
+impl Drop for SparkleP {
     fn drop(&mut self) {
         self.st.zeroize()
     }
